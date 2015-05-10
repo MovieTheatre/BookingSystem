@@ -1,8 +1,5 @@
 import sqlite3
-
-
-VAR_DB_NAME = "movie.db"
-TABLES = ["Movies", "Projections", "Reservations"]
+from settings import *
 
 
 def show_movies():
@@ -80,13 +77,13 @@ def make_reservation():
     taken = get_taken_seats(projectionChoice)
     generate_projection_map(taken)
 
-    reservationData(projectionChoice, booked_seats)
+    reservationData(projectionChoice, booked_seats, userName)
 
     cursor.close()
     connection.close()
 
 
-def reservationData(projection_id, booked_seats):
+def reservationData(projection_id, booked_seats, userName):
     connection = sqlite3.connect(VAR_DB_NAME)
     cursor = connection.cursor()
     connection.row_factory = sqlite3.Row
@@ -115,63 +112,22 @@ def reservationData(projection_id, booked_seats):
     print("Seats: {}".format(booked_seats))
     finalization = input("Enter finalize to finalize> ")
     if finalization == "finalize":
-        print("THANK YOU!")
+        print(CONFIRM_RESERVATION_PIC)
     else:
-        print("""                               :oooooooooo:
-                        ::oOOOOooo:::::ooooO88Oo:
-                  :O8O:                           oO8o
-              o8o                                      :8o
-             88:                                         O8:
-          8O:                                               oO
-         8o                                                  oO
-        8o                                                    Oo
-      :8o                                              :      :8:
-     :8:                                               :       :8:
-    O::o                                              oo         8:
-   :o:ooO                                             oo         o8
-   8    oo                                            :o          8o
-  8      o8:                                            O8O:       8:
- o:     ::88:                                             O8        8
- 8       888:                                             O8o       O
-:8       :88:                                             888Ooo:   oo
-Oo       O88           :oO88O:            oO88Oo:         O8888O    :O
-O:  ::   :88      :oO888888888:          8888888888OOo:    8888:    :O
-O:  :o    8o   o88888888888888:          88888888888888O:   o88     :O
-Oo   oo  oO  o888888888888888O           8888888888888888o   88     :O
-:O    O: oo  8888888888888888:          o88888888888888888   88     :O
- O:   :88:   O88888888888888888           O888888888888888  o88888888O
-  o   :8O    o888888888888888O            O88888888888888O   88888888o
-  O:  :8:    88888888888888O:      :      O888888888888888   O8888888:
-  :O  :8     88888888888888       o88:    :o88888888888888    8888888
-   OoooO    :8888888888O:8o      :8O88       :O8888888888o     O888oo
-    888:     8888888o:  8O       :8o88O         O888888O:          :
-    :88       oOOo:   :O:        :8:888          8o               :
-     88              o:          88oO88o      :: :oo            :
-     88::               oo      O88O:888o    O8o:   :   ::     : :
-     8o o:                     o88oo O888    :8        :88   :: ::
-     oO  oo     o              O8o : O888     :o       oO8o ::  O
-      O:  Oo  ::o              OO    OO :             :oO88 O::O:
-       O  :8: :88o             OO    Oo             :O888O  8OO:
-       oo  Oo  O888o           :O:o:  :            o8888o  :O
-        :O888  :88888           :o  Oo            o8888o   8:
-           :8:  O8888               8            :O888O   :8
-            Oo  :8888               o             :888    :O
-            :O   o888  ::                         o88:    Oo
-            :O    O88OO8oOOoOOoOooOooOOOOOOOOOO88O88O     O:
-            OO     888:: o :o: o  o   O: 8: O o::o 8:     8
-           :8O     :88o:  :    :  :      ::        8      O
-           O8o      Oo:8oo:    :          :   :::oo8     :O
-           88o      Oo :      o:o: :o    Oo : :  o       :O
-           88O       :oo:oo:o o :  :: oo :: o O::o       o:
-           888         :::::oO8O8OoO8O88oOOoo:         :Oo
-            O88Oo::               ::                  :O
-             :oO8888o                               :Oo
-                 :o88o                      oo    o8O:
-                     o8O     Oo    o           o88
-                     :88o        O:          O88
-                        O88o     :8o        o88O
-                          o88ooOO888O::::oO88O:
-                            o8888888888888Oo """)
+        cancel_reservation(userName)
+        print(CANCEL_RESERVATION_PIC)
+
+
+def cancel_reservation(userName):
+    connection = sqlite3.connect(VAR_DB_NAME)
+    cursor = connection.cursor()
+
+    sql = """DELETE FROM reservations
+      WHERE userName = ? ;
+      """
+
+    cursor.execute(sql, (userName,))
+    connection.commit()
 
 
 def get_taken_seats(projection_id):
@@ -253,5 +209,5 @@ def get_seats(numberTickets, taken):
         seatMatrix.append((row, col))
     return seatMatrix
 
-
-make_reservation()
+print(CANCEL_RESERVATION_PIC)
+print(CONFIRM_RESERVATION_PIC)
